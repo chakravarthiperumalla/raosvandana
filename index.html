@@ -86,6 +86,9 @@ textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
 .btn.main:hover{background:var(--red-dark)}
 .btn:active{transform:translateY(1px)}
 .note{font-size:12.5px;color:var(--muted);margin-top:13px}
+.manual{margin-top:13px;font-size:13px;color:var(--ink);background:#FFF8E6;
+  border:1px solid #F3D9A4;border-radius:10px;padding:11px 13px;line-height:1.55}
+.manual a{color:var(--red);font-weight:600;white-space:nowrap}
 
 /* contact */
 .icons{display:flex;justify-content:center;flex-wrap:wrap;gap:24px 6px;padding:4px 0;max-width:300px;margin:0 auto}
@@ -183,6 +186,9 @@ footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:26px;lin
       <button class="btn ghost" id="again" type="button">&#8635; New draft</button>
       <button class="btn main" id="go" type="button">Copy &amp; open Google reviews</button>
     </div>
+    <p class="manual" id="manual" hidden>Your review is selected above &mdash; copy it
+      (<b>Ctrl/Cmd&nbsp;+&nbsp;C</b>, or long&#8209;press &rarr; Copy), then
+      <a id="manualLink" href="#" target="_blank" rel="noopener">open Google reviews &rarr;</a></p>
     <p class="note" id="hint">Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.</p>
   </section>
 
@@ -299,67 +305,59 @@ function say(m){
   toast.textContent = m; toast.classList.add("show");
   clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("show"), 3200);
 }
-async function copyText(text){
-  try { await navigator.clipboard.writeText(text); return true; }
-  catch(e){
-    try {
-      ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
-      const ok = document.execCommand("copy"); ta.blur(); return ok;
-    } catch(_) { return false; }
-  }
+/* Copy must happen while THIS page still has focus. Opening the Google tab
+   first steals focus, and a browser refuses a clipboard write from an
+   unfocused document - which silently broke the copy. So: copy, then open. */
+function selectDraft(){
+  try { ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); } catch(e){}
 }
-const SOCIAL_META = {
-  instagram: { label: "Instagram", cls: "ig",
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" stroke="none"/></svg>' },
-  facebook: { label: "Facebook", cls: "fb",
-    svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.2h-3.1V7.8c0-.9.3-1.5 1.6-1.5h1.7V3.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.6V13h2.7v8h3.2z"/></svg>' },
-  pinterest: { label: "Pinterest", cls: "pinterest",
-    svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.1-2 .02-2.9l1.2-5.1s-.3-.6-.3-1.5c0-1.4.8-2.5 1.8-2.5.9 0 1.3.6 1.3 1.4 0 .9-.6 2.2-.9 3.4-.2 1 .5 1.9 1.5 1.9 1.8 0 3.1-2.3 3.1-5.1 0-2.1-1.4-3.7-4-3.7a4.6 4.6 0 0 0-4.8 4.6c0 .9.3 1.5.8 2 .1.1.1.2.1.3l-.2.9c0 .2-.2.2-.4.1-1.1-.5-1.7-1.9-1.7-3.5 0-2.6 2.2-5.7 6.5-5.7 3.5 0 5.8 2.5 5.8 5.2 0 3.6-2 6.2-4.9 6.2-1 0-1.9-.5-2.2-1.1l-.6 2.4c-.2.8-.7 1.7-1.1 2.3A10 10 0 1 0 12 2Z"/></svg>' }
-};
-(function renderSocial(){
-  const row = document.getElementById("socialRow");
-  const note = document.getElementById("socialNote");
-  let pending = [];
-  Object.keys(SOCIAL_META).forEach(key => {
-    const m = SOCIAL_META[key];
-    const url = (SOCIAL[key] || "").trim();
-    const el = document.createElement("a");
-    el.className = "ic " + m.cls + (url ? "" : " todo");
-    el.setAttribute("aria-label", m.label);
-    el.innerHTML = m.svg;
-    const wrap = document.createElement("div");
-    wrap.className = "icw";
-    const cap = document.createElement("span");
-    cap.className = "iclab";
-    cap.textContent = m.label;
-    if (url) {
-      el.href = url; el.target = "_blank"; el.rel = "noopener";
+function copySync(text){
+  const t = document.createElement("textarea");
+  t.value = text;
+  t.setAttribute("readonly", "");
+  t.style.cssText = "position:fixed;left:-9999px;top:0;font-size:16px;opacity:0";
+  document.body.appendChild(t);
+  let ok = false;
+  try {
+    if (/ipad|iphone|ipod/i.test(navigator.userAgent)) {
+      const r = document.createRange();
+      r.selectNodeContents(t);
+      const sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(r);
+      t.setSelectionRange(0, text.length);
     } else {
-      pending.push(m.label);
-      el.href = "#";
-      el.addEventListener("click", e => {
-        e.preventDefault();
-        say("Add the " + m.label + " link in the SOCIAL block at the top of this file.");
-      });
+      t.select();
     }
-    wrap.appendChild(el); wrap.appendChild(cap); row.appendChild(wrap);
-  });
-  note.textContent = pending.length
-    ? pending.join(" \u00b7 ") + " \u2014 link" + (pending.length > 1 ? "s" : "") + " not added yet"
-    : "";
-  if (!pending.length) note.style.display = "none";
-})();
+    ok = document.execCommand("copy");
+  } catch(e) { ok = false; }
+  document.body.removeChild(t);
+  return ok;
+}
 
-document.getElementById("go").addEventListener("click", async () => {
+document.getElementById("go").addEventListener("click", () => {
   const text = ta.value.trim();
-  if(!text){ say("Write or generate a review first"); return; }
-  const w = window.open(REVIEW_URL, "_blank");
-  if(w) w.opener = null;
-  const ok = await copyText(text);
-  say(ok ? "Review copied. Paste it on Google and post."
-         : "Could not copy — long-press the text to copy it.");
-  if(!w) window.location.href = REVIEW_URL;
+  if (!text) { say("Write or generate a review first"); return; }
+
+  // 1. copy first, synchronously, while the page is still focused
+  let ok = copySync(text);
+  // 2. modern API too, best effort - also started before focus moves
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => { ok = true; }).catch(() => {});
+  }
+
+  if (ok) {
+    say("Review copied. Paste it on Google and post.");
+    const w = window.open(REVIEW_URL, "_blank");
+    if (w) w.opener = null; else window.location.href = REVIEW_URL;
+  } else {
+    // never send them to Google without their text - let them copy by hand
+    selectDraft();
+    document.getElementById("manual").hidden = false;
+    say("Couldn't copy automatically \u2014 the review is selected, copy it then tap the link.");
+  }
 });
+
+document.getElementById("manualLink").href = REVIEW_URL;
 </script>
 </body>
 </html>
