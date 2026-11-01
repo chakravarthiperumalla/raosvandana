@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rao's Vandana · Share your experience</title>
-<meta name="description" content="Rao's Vandana, Vijayawada — grains, flours, ravva, papads and snacks. Share your experience on Google in a few taps.">
+<meta name="description" content="Rao's Vandana, Vijayawada — grains, flours, ravva and papads. Share your experience on Google in a few taps.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="https://raosvandana.in/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -157,13 +157,13 @@ footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:26px;lin
 
   <section class="card about">
     <h2>About Rao's Vandana</h2>
-    <p>Rao's Vandana is a grain store in Vijayawada, Andhra Pradesh, offering high-quality grains, flours and snacks for everyday cooking.</p>
-    <p>The range covers Ravva and Semolina, Flours and Millets, Vermicelli and Pasta, and Snacks and Papads &mdash; from Ragi flour to Bansi and Sujji ravva, with doorstep delivery across Vijayawada and beyond.</p>
+    <p>Rao's Vandana is a grain store in Vijayawada, Andhra Pradesh, offering high-quality grains, flours and papads for everyday cooking.</p>
+    <p>The range covers Ravva and Semolina, Flours and Millets, Vermicelli and Pasta, and Papads &mdash; from Ragi flour to Bansi and Sujji ravva, with doorstep delivery across Vijayawada and beyond.</p>
     <div class="cats">
       <span class="cat">Ravva &amp; Semolina</span>
       <span class="cat">Flours &amp; Millets</span>
       <span class="cat">Vermicelli &amp; Pasta</span>
-      <span class="cat">Snacks &amp; Papads</span>
+      <span class="cat">Papads</span>
     </div>
     <p class="addr">4/7A, D.No 39-2-19/12B, Pragati Nagar Road, opp. Gollapudi, Bhavanipuram, Housing Board Colony, Vijayawada, Andhra Pradesh 520012</p>
   </section>
@@ -209,7 +209,7 @@ footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:26px;lin
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></a><span class="iclab">Email</span></div>
       <div class="icw"><a class="ic" href="https://raosvandana.in/" target="_blank" rel="noopener" aria-label="Website">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15 0 18M12 3c-2.5 2.6-2.5 15 0 18"/></svg></a><span class="iclab">Website</span></div>
-      <div class="icw"><a class="ic" href="https://www.google.com/maps/place/?q=place_id:ChIJ52M_DF3vNToRrOzyq71-YOg" target="_blank" rel="noopener" aria-label="Google listing">
+      <div class="icw"><a class="ic" href="https://maps.google.com/?cid=16744522767662247084" target="_blank" rel="noopener" aria-label="Google listing">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></a><span class="iclab">Google listing</span></div>
     </div>
     <a class="wabtn" href="https://wa.me/919533777779" target="_blank" rel="noopener">
@@ -260,43 +260,90 @@ document.getElementById("mapLink").href = DIR_URL;
 
 const PARTS = {
   quality: ["The quality of the grains and flours is consistently good.",
-            "Products are fresh and clean, good quality every time."],
+            "Products are fresh and clean, good quality every time.",
+            "Quality has been consistent across everything we have bought.",
+            "The flours are well milled and there is no grit in them."],
   papad:   ["The masala papads are tasty and crisp.",
-            "We liked the papad varieties, the masala one especially."],
+            "We liked the papad varieties, the masala one especially.",
+            "The papads fry up well and taste homemade.",
+            "The carom papad has become a favourite at home."],
   ravva:   ["The bansi and sujji ravva are clean and well milled.",
-            "Ravva quality is good, works well for upma and sweets."],
+            "Ravva quality is good, it works well for upma and sweets.",
+            "The ravva cooks evenly and does not turn sticky.",
+            "Good ravva, exactly what we needed for breakfast items."],
   millets: ["Good range of millets and ragi flour in one place.",
-            "Happy to find proper millet flours here."],
+            "Happy to find proper millet flours here.",
+            "The ragi flour is fresh and smells right.",
+            "Nice to get millets without hunting around town."],
   price:   ["Prices are reasonable for the quality you get.",
-            "Good value compared to other stores nearby."],
+            "Good value compared to other stores nearby.",
+            "Rates are fair, especially for larger quantities.",
+            "Pricing is honest and straightforward."],
   packing: ["The order was well packed and reached in good condition.",
-            "Packing was neat and delivery was on time."],
+            "Packing was neat and delivery was on time.",
+            "Everything arrived sealed properly with nothing spilled.",
+            "Delivery was quick and the packing held up well."],
   service: ["They respond quickly on WhatsApp and are easy to deal with.",
-            "Service was prompt and the dealing is straightforward."]
+            "Service was prompt and the dealing is straightforward.",
+            "Queries get answered quickly and politely.",
+            "Ordering was simple and they kept us updated."]
 };
 const OPENERS = ["Ordered from Rao's Vandana in Vijayawada.",
                  "Have been buying our kitchen products from Rao's Vandana.",
                  "Bought flours and papads from Rao's Vandana recently.",
-                 "Tried Rao's Vandana for our monthly provisions."];
+                 "Tried Rao's Vandana for our monthly provisions.",
+                 "Been a regular customer of Rao's Vandana for a while now.",
+                 "Picked up a few items from Rao's Vandana last week.",
+                 "First time ordering from Rao's Vandana.",
+                 "We get our ravva and flours from Rao's Vandana."];
 const CLOSERS = ["Would recommend them for everyday kitchen products.",
                  "Will be ordering again.",
                  "Happy to recommend them to others in Vijayawada.",
-                 "Worth trying if you want good quality products."];
+                 "Worth trying if you want good quality products.",
+                 "Will definitely keep buying from here.",
+                 "Good option for regular household supplies.",
+                 "Thank you for the good service.",
+                 "Recommended."];
 
 const ta = document.getElementById("t");
 const chips = [...document.querySelectorAll(".chip")];
 const pick = a => a[Math.floor(Math.random() * a.length)];
 
-function compose(){
+/* A fresh draft on every load and every scan. The chips that start selected
+   are shuffled too, so the shape of the review changes, not just the wording.
+   The last draft is remembered on this device and never repeated twice
+   in a row. */
+const LAST_KEY = "rv_last_draft";
+function lastDraft(){ try { return localStorage.getItem(LAST_KEY) || ""; } catch(e){ return ""; } }
+function remember(t){ try { localStorage.setItem(LAST_KEY, t); } catch(e){} }
+
+function buildDraft(){
   const on = chips.filter(c => c.getAttribute("aria-pressed") === "true").map(c => c.dataset.k);
   const body = on.map(k => pick(PARTS[k])).join(" ");
-  ta.value = [pick(OPENERS), body, pick(CLOSERS)].filter(Boolean).join(" ");
+  return [pick(OPENERS), body, pick(CLOSERS)].filter(Boolean).join(" ");
+}
+function compose(){
+  let t = buildDraft();
+  for (let i = 0; i < 20 && t === lastDraft(); i++) t = buildDraft();
+  ta.value = t;
+  remember(t);
+}
+function shuffleChips(){
+  const n = 2 + Math.floor(Math.random() * 2);          // two or three points
+  const order = chips.slice();
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  const chosen = order.slice(0, n);
+  chips.forEach(c => c.setAttribute("aria-pressed", chosen.includes(c) ? "true" : "false"));
 }
 chips.forEach(c => c.addEventListener("click", () => {
   c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true");
   compose();
 }));
 document.getElementById("again").addEventListener("click", compose);
+shuffleChips();
 compose();
 
 const toast = document.getElementById("toast");
