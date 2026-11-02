@@ -260,7 +260,7 @@ const CID = "16744522767662247084";
    one opens the review box in a single tap and handles the app
    handover itself. Leave it empty and the page uses the links below.
    ------------------------------------------------------------------ */
-const GBP_REVIEW = "";
+const GBP_REVIEW = "https://g.page/r/Cazs8qu9fmDoEBM/review";
 
 /* The web review box. Opens straight on the write-a-review dialog, but a
    browser that is not signed in to Google shows a sign-in page first. */
@@ -471,6 +471,7 @@ document.getElementById("go").addEventListener("click", () => {
 
 document.getElementById("manualLink").href = reviewTarget();
 document.getElementById("directLink").href = REVIEW_URL;
+if (GBP_REVIEW) document.querySelector(".note.alt").hidden = true;
 document.getElementById("hint").textContent = (onPhone && !GBP_REVIEW)
   ? "Google Maps opens on the shop. Tap Reviews, then Write a review, choose your stars and paste. Please write only about a purchase you actually made."
   : "Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.";
