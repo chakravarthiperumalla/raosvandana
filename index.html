@@ -191,8 +191,8 @@ textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
       (<b>Ctrl/Cmd&nbsp;+&nbsp;C</b>, or long&#8209;press &rarr; Copy), then
       <a id="manualLink" href="#" target="_blank" rel="noopener">open Google reviews &rarr;</a></p>
     <p class="note" id="hint"></p>
-    <p class="note alt">Already signed in to Google in this browser?
-      <a id="directLink" href="#" target="_blank" rel="noopener">Open the review box directly &rarr;</a></p>
+    <p class="note alt"><span id="altText">Already signed in to Google in this browser? </span>
+      <a id="directLink" href="#" target="_blank" rel="noopener">Open the review box in your browser &rarr;</a></p>
   </section>
 
   <section class="card roomy">
@@ -271,9 +271,24 @@ const REVIEW_URL = "https://search.google.com/local/writereview?placeid=" + PLAC
    sits under Reviews. */
 const MAPS_URL = "https://maps.google.com/?cid=" + CID;
 
-const onPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-/* Phone -> the Maps app. Desktop -> the review box straight away. */
-function reviewTarget(){ return GBP_REVIEW || (onPhone ? MAPS_URL : REVIEW_URL); }
+const ANDROID = /Android/i.test(navigator.userAgent);
+const IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const onPhone = ANDROID || IOS;
+
+/* Android: an intent URL names the Maps package outright, so the app opens
+   even when "open supported links" is switched off for it. Chrome falls back
+   to the review box in the browser if Maps is not installed.
+   Note: Google exposes no public link that lands inside the app directly on
+   the review composer, so this opens the shop and Reviews is one tap away. */
+const MAPS_INTENT = "intent://maps.google.com/?cid=" + CID +
+  "#Intent;scheme=https;package=com.google.android.apps.maps;S.browser_fallback_url=" +
+  encodeURIComponent(GBP_REVIEW || REVIEW_URL) + ";end";
+
+function reviewTarget(){
+  if (ANDROID) return MAPS_INTENT;   // force the Maps app
+  if (IOS) return MAPS_URL;          // universal link, opens Maps if installed
+  return GBP_REVIEW || REVIEW_URL;   // desktop: straight to the review box
+}
 const DIR_URL = "https://www.google.com/maps/dir/?api=1&destination=16.5338668,80.5919223" +
                 "&destination_place_id=" + PLACE_ID;
 document.getElementById("mapLink").href = DIR_URL;
@@ -456,7 +471,7 @@ document.getElementById("go").addEventListener("click", () => {
 
   if (ok) {
     const target = reviewTarget();
-    say(onPhone && !GBP_REVIEW
+    say(onPhone
         ? "Review copied. Tap Reviews \u2192 Write a review, then paste."
         : "Review copied. Paste it on Google and post.");
     /* On a phone, navigate this tab rather than opening a new one. A popup
@@ -478,10 +493,11 @@ document.getElementById("go").addEventListener("click", () => {
 });
 
 document.getElementById("manualLink").href = reviewTarget();
-document.getElementById("directLink").href = REVIEW_URL;
-if (GBP_REVIEW) document.querySelector(".note.alt").hidden = true;
-document.getElementById("hint").textContent = (onPhone && !GBP_REVIEW)
-  ? "Google Maps opens on the shop. Tap Reviews, then Write a review, choose your stars and paste. Please write only about a purchase you actually made."
+document.getElementById("directLink").href = GBP_REVIEW || REVIEW_URL;
+document.querySelector(".note.alt").hidden = !onPhone;
+if (onPhone) document.getElementById("altText").textContent = "Maps app not installed? ";
+document.getElementById("hint").textContent = onPhone
+  ? "The Google Maps app opens on the shop. Tap Reviews, then Write a review, choose your stars and paste. Please write only about a purchase you actually made."
   : "Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.";
 </script>
 </body>
