@@ -86,6 +86,8 @@ textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
 .btn.main:hover{background:var(--red-dark)}
 .btn:active{transform:translateY(1px)}
 .note{font-size:12.5px;color:var(--muted);margin-top:13px}
+.note.alt{margin-top:8px}
+.note.alt a{color:var(--red);font-weight:600}
 .manual{margin-top:13px;font-size:13px;color:var(--ink);background:#FFF8E6;
   border:1px solid #F3D9A4;border-radius:10px;padding:11px 13px;line-height:1.55}
 .manual a{color:var(--red);font-weight:600;white-space:nowrap}
@@ -188,7 +190,9 @@ textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
     <p class="manual" id="manual" hidden>Your review is selected above &mdash; copy it
       (<b>Ctrl/Cmd&nbsp;+&nbsp;C</b>, or long&#8209;press &rarr; Copy), then
       <a id="manualLink" href="#" target="_blank" rel="noopener">open Google reviews &rarr;</a></p>
-    <p class="note" id="hint">Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.</p>
+    <p class="note" id="hint"></p>
+    <p class="note alt">Already signed in to Google in this browser?
+      <a id="directLink" href="#" target="_blank" rel="noopener">Open the review box directly &rarr;</a></p>
   </section>
 
   <section class="card roomy">
@@ -247,7 +251,29 @@ const SOCIAL = {
 /* ---------------------------------------------------------------- */
 
 const PLACE_ID = "ChIJ52M_DF3vNToRrOzyq71-YOg";
+const CID = "16744522767662247084";
+
+/* ------------------------------------------------------------------
+   BEST OPTION: if the owner gives you the official review short link
+   from their Google Business Profile (Home > "Ask for reviews", it
+   looks like https://g.page/r/XXXXXXXX/review), paste it here. That
+   one opens the review box in a single tap and handles the app
+   handover itself. Leave it empty and the page uses the links below.
+   ------------------------------------------------------------------ */
+const GBP_REVIEW = "";
+
+/* The web review box. Opens straight on the write-a-review dialog, but a
+   browser that is not signed in to Google shows a sign-in page first. */
 const REVIEW_URL = "https://search.google.com/local/writereview?placeid=" + PLACE_ID;
+
+/* The shop on Google Maps. On a phone this opens the Maps app, where the
+   customer is already signed in - no sign-in page - and "Write a review"
+   sits under Reviews. */
+const MAPS_URL = "https://maps.google.com/?cid=" + CID;
+
+const onPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+/* Phone -> the Maps app. Desktop -> the review box straight away. */
+function reviewTarget(){ return GBP_REVIEW || (onPhone ? MAPS_URL : REVIEW_URL); }
 const DIR_URL = "https://www.google.com/maps/dir/?api=1&destination=16.5338668,80.5919223" +
                 "&destination_place_id=" + PLACE_ID;
 document.getElementById("mapLink").href = DIR_URL;
@@ -429,9 +455,12 @@ document.getElementById("go").addEventListener("click", () => {
   }
 
   if (ok) {
-    say("Review copied. Paste it on Google and post.");
-    const w = window.open(REVIEW_URL, "_blank");
-    if (w) w.opener = null; else window.location.href = REVIEW_URL;
+    const target = reviewTarget();
+    say(onPhone && !GBP_REVIEW
+        ? "Review copied. Tap Reviews \u2192 Write a review, then paste."
+        : "Review copied. Paste it on Google and post.");
+    const w = window.open(target, "_blank");
+    if (w) w.opener = null; else window.location.href = target;
   } else {
     // never send them to Google without their text - let them copy by hand
     selectDraft();
@@ -440,7 +469,11 @@ document.getElementById("go").addEventListener("click", () => {
   }
 });
 
-document.getElementById("manualLink").href = REVIEW_URL;
+document.getElementById("manualLink").href = reviewTarget();
+document.getElementById("directLink").href = REVIEW_URL;
+document.getElementById("hint").textContent = (onPhone && !GBP_REVIEW)
+  ? "Google Maps opens on the shop. Tap Reviews, then Write a review, choose your stars and paste. Please write only about a purchase you actually made."
+  : "Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.";
 </script>
 </body>
 </html>
