@@ -275,19 +275,23 @@ const ANDROID = /Android/i.test(navigator.userAgent);
 const IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const onPhone = ANDROID || IOS;
 
-/* Android: an intent URL names the Maps package outright, so the app opens
-   even when "open supported links" is switched off for it. Chrome falls back
-   to the review box in the browser if Maps is not installed.
-   Note: Google exposes no public link that lands inside the app directly on
-   the review composer, so this opens the shop and Reviews is one tap away. */
-const MAPS_INTENT = "intent://maps.google.com/?cid=" + CID +
+/* The Google Maps Android app declares a verified intent filter for
+   host search.google.com, path /local/writereview/mobile - which is the
+   review composer itself, not the place page. The normal /local/writereview
+   path is NOT in that filter, which is why it stays in the browser.
+   Wrapping the /mobile path in an intent that names the Maps package opens
+   the review sheet directly in the app, even when Android's link
+   verification is switched off for Maps. Undocumented by Google, so the
+   browser fallback matters.  */
+const REVIEW_MOBILE = "search.google.com/local/writereview/mobile?placeid=" + PLACE_ID;
+const MAPS_INTENT = "intent://" + REVIEW_MOBILE +
   "#Intent;scheme=https;package=com.google.android.apps.maps;S.browser_fallback_url=" +
   encodeURIComponent(GBP_REVIEW || REVIEW_URL) + ";end";
 
 function reviewTarget(){
-  if (ANDROID) return MAPS_INTENT;   // force the Maps app
-  if (IOS) return MAPS_URL;          // universal link, opens Maps if installed
-  return GBP_REVIEW || REVIEW_URL;   // desktop: straight to the review box
+  if (ANDROID) return MAPS_INTENT;   // review sheet inside the Maps app
+  if (IOS) return MAPS_URL;          // universal link: the shop in the Maps app
+  return GBP_REVIEW || REVIEW_URL;   // desktop: the web review box
 }
 const DIR_URL = "https://www.google.com/maps/dir/?api=1&destination=16.5338668,80.5919223" +
                 "&destination_place_id=" + PLACE_ID;
@@ -471,9 +475,9 @@ document.getElementById("go").addEventListener("click", () => {
 
   if (ok) {
     const target = reviewTarget();
-    say(onPhone
+    say(IOS
         ? "Review copied. Tap Reviews \u2192 Write a review, then paste."
-        : "Review copied. Paste it on Google and post.");
+        : "Review copied. Paste it in the review box and post.");
     /* On a phone, navigate this tab rather than opening a new one. A popup
        tab usually stays inside the browser, while a top-level navigation lets
        Android App Links / iOS Universal Links hand the URL to the Maps app,
@@ -496,9 +500,10 @@ document.getElementById("manualLink").href = reviewTarget();
 document.getElementById("directLink").href = GBP_REVIEW || REVIEW_URL;
 document.querySelector(".note.alt").hidden = !onPhone;
 if (onPhone) document.getElementById("altText").textContent = "Maps app not installed? ";
-document.getElementById("hint").textContent = onPhone
-  ? "The Google Maps app opens on the shop. Tap Reviews, then Write a review, choose your stars and paste. Please write only about a purchase you actually made."
-  : "Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.";
+document.getElementById("hint").textContent =
+  ANDROID ? "The Google Maps app opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made."
+  : IOS   ? "The Google Maps app opens on the shop. Tap Reviews, then Write a review, choose your stars and paste. Please write only about a purchase you actually made."
+          : "Google opens on the review box for Rao's Vandana. Choose your stars, paste and post. Please write only about a purchase you actually made.";
 </script>
 </body>
 </html>
