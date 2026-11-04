@@ -68,7 +68,10 @@ h2{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-
   border-left:3px solid var(--red);border-radius:0 10px 10px 0;padding:12px 14px}
 
 /* review builder */
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.grouplab{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin:2px 0 8px}
+.chip.prod[aria-pressed="false"]{background:var(--tint);border-color:rgba(236,51,55,.22)}
 .chip{font:inherit;font-size:13px;font-weight:500;padding:9px 14px;border-radius:999px;cursor:pointer;
   border:1px solid var(--line);background:#fff;color:var(--ink);transition:.15s;min-height:38px}
 .chip:hover{border-color:rgba(236,51,55,.45)}
@@ -172,14 +175,23 @@ textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
   <section class="card">
     <h2>Share your experience</h2>
     <p class="sub">Tap what matched your experience, edit the draft in your own words, then post it on Google.</p>
+    <p class="grouplab">What was good</p>
     <div class="chips" id="chips" role="group" aria-label="What was good?">
-      <button class="chip" aria-pressed="true"  data-k="quality">Good quality</button>
-      <button class="chip" aria-pressed="true"  data-k="papad">Tasty papads</button>
+      <button class="chip" aria-pressed="false" data-k="quality">Good quality</button>
+      <button class="chip" aria-pressed="false" data-k="papad">Tasty papads</button>
       <button class="chip" aria-pressed="false" data-k="ravva">Clean ravva</button>
-      <button class="chip" aria-pressed="false" data-k="millets">Millets &amp; flours</button>
       <button class="chip" aria-pressed="false" data-k="price">Fair price</button>
       <button class="chip" aria-pressed="false" data-k="packing">Packing &amp; delivery</button>
       <button class="chip" aria-pressed="false" data-k="service">Helpful service</button>
+    </div>
+    <p class="grouplab">Products</p>
+    <div class="chips" id="prodchips" role="group" aria-label="Which product?">
+      <button class="chip prod" aria-pressed="false" data-k="p_ragi">Ragi</button>
+      <button class="chip prod" aria-pressed="false" data-k="p_vermicelli">Vermicelli</button>
+      <button class="chip prod" aria-pressed="false" data-k="p_pasta">Pasta</button>
+      <button class="chip prod" aria-pressed="false" data-k="p_papad">Papad</button>
+      <button class="chip prod" aria-pressed="false" data-k="p_bansi">Bansi Ravva</button>
+      <button class="chip prod" aria-pressed="false" data-k="p_sujji">Sujji Ravva</button>
     </div>
     <label class="lbl" for="t">Your review (edit freely)</label>
     <textarea id="t" aria-describedby="hint"></textarea>
@@ -306,14 +318,25 @@ const PARTS = {
             "Good papad varieties.", "The carom papad is excellent."],
   ravva:   ["Clean, well milled ravva.", "Ravva quality is very good.",
             "Good ravva for upma and sweets.", "The sujji ravva is excellent."],
-  millets: ["Good range of millets and ragi flour.", "Fresh ragi flour.",
-            "Proper millet flours here.", "Nice millet selection."],
   price:   ["Prices are reasonable.", "Good value for the quality.",
             "Fair rates.", "Honest pricing."],
   packing: ["Well packed, arrived in good condition.", "Neat packing, delivered on time.",
             "Quick delivery.", "Packed properly."],
   service: ["Quick replies on WhatsApp.", "Prompt and friendly service.",
-            "Easy to deal with.", "Service was prompt."]
+            "Easy to deal with.", "Service was prompt."],
+  // the products themselves
+  p_ragi:       ["The ragi flour is fresh and fine.", "Good ragi flour, mixes well.",
+                 "Ragi flour quality is very good.", "Fresh ragi flour, no lumps."],
+  p_vermicelli: ["The vermicelli cooks without sticking.", "Good vermicelli, stays separate.",
+                 "Vermicelli quality is good.", "Nice vermicelli for upma."],
+  p_pasta:      ["The pasta cooks evenly.", "Good pasta, holds its shape.",
+                 "Pasta quality is good.", "The children liked the pasta."],
+  p_papad:      ["The papads fry up crisp.", "Papads are tasty and thin.",
+                 "Good papads, fresh stock.", "The masala papad is excellent."],
+  p_bansi:      ["The bansi ravva is clean and well milled.", "Bansi ravva quality is very good.",
+                 "Good bansi ravva for upma.", "The bansi ravva is fresh."],
+  p_sujji:      ["The sujji ravva is excellent.", "Sujji ravva is clean and fine.",
+                 "Good sujji ravva for sweets.", "Sujji ravva quality is good."]
 };
 const CLOSERS = ["Recommended.", "Will order again.", "Highly recommended.",
                  "Worth trying.", "Happy with the purchase.", "Thank you."];
@@ -331,9 +354,6 @@ const LONG_PARTS = {
   ravva:   ["The bansi and sujji ravva are clean and well milled.",
             "Ravva quality is good, it works well for upma and sweets.",
             "The ravva cooks evenly and does not turn sticky."],
-  millets: ["Good range of millets and ragi flour in one place.",
-            "The ragi flour is fresh and smells right.",
-            "Happy to find proper millet flours without hunting around town."],
   price:   ["Prices are reasonable for the quality you get.",
             "Rates are fair, especially for larger quantities.",
             "Good value compared to other stores nearby."],
@@ -342,7 +362,25 @@ const LONG_PARTS = {
             "Everything arrived sealed properly with nothing spilled."],
   service: ["They respond quickly on WhatsApp and are easy to deal with.",
             "Service was prompt and the dealing is straightforward.",
-            "Queries get answered quickly and politely."]
+            "Queries get answered quickly and politely."],
+  p_ragi:       ["The ragi flour is fresh and finely ground, it mixes without lumps.",
+                 "Ragi flour quality is good and it smells fresh.",
+                 "We use the ragi flour regularly and it has been consistent."],
+  p_vermicelli: ["The vermicelli cooks well and the strands stay separate.",
+                 "Good vermicelli, it does not turn sticky when cooked.",
+                 "The vermicelli works well for upma and payasam."],
+  p_pasta:      ["The pasta cooks evenly and holds its shape.",
+                 "Good quality pasta, the children enjoy it.",
+                 "The pasta does not break while cooking."],
+  p_papad:      ["The papads fry up crisp and taste homemade.",
+                 "Good papads, fresh stock and nicely packed.",
+                 "The masala papad is excellent with meals."],
+  p_bansi:      ["The bansi ravva is clean, well milled and cooks evenly.",
+                 "Bansi ravva quality is very good, we buy it every month.",
+                 "Good bansi ravva, it works well for upma."],
+  p_sujji:      ["The sujji ravva is excellent for sweets and upma.",
+                 "Sujji ravva is clean, fine and consistent.",
+                 "Good sujji ravva, no grit at all."]
 };
 const LONG_OPENERS = ["Ordered from Rao's Vandana in Vijayawada.",
                       "Have been buying our kitchen products from Rao's Vandana.",
@@ -451,9 +489,14 @@ function buildLong(keys){
   if (linesOf(t + " " + close) <= LONG_MAX_LINES) t += " " + close;
   // if it came out short of three lines, add another point that still fits
   if (linesOf(t) < LONG_MIN_LINES) {
-    for (const k of Object.keys(LONG_PARTS)) {
+    for (const c of chips) {
+      const k = c.dataset.k;
+      if (keys.indexOf(k) !== -1 || !LONG_PARTS[k]) continue;
       const next = t + " " + pick(LONG_PARTS[k]);
-      if (linesOf(next) <= LONG_MAX_LINES) { t = next; }
+      if (linesOf(next) <= LONG_MAX_LINES) {
+        t = next;
+        c.setAttribute("aria-pressed", "true");   // keep the chips matching the text
+      }
       if (linesOf(t) >= LONG_MIN_LINES) break;
     }
   }
